@@ -1,0 +1,119 @@
+spring:
+  servlet:
+    multipart.max-file-size: 20MB
+    multipart.max-request-size: 20MB
+  datasource:
+    postgres:
+      app:
+        jdbc-url: jdbc:postgresql://localhost:5432/postgres
+        username: postgres
+        password: 12345678
+        database: postgres
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: org.postgresql.Driver
+        enabled: true
+        schema: read_zone
+        hikari:
+          idle-timeout: 30000
+          max-lifetime: 900000
+
+app:
+  application-short-name: READ_ZONE
+  enable-log-request-http: false
+  security:
+    api-whitelist:
+      - /auth/login
+      - /auth/register
+      - /user
+      - /book
+      - /review/search
+      - /review/count-star
+    jwt:
+      secret-key: WZXD8K9rPI4yQcQetLgnAlEQKrAnc_hI71u4fIzFkzY
+      expired-in: 172800000
+      refresh-token:
+        expiration: 345600000
+
+
+http-client:
+  default:
+    enable: true
+    type: apache_http_client
+    connection:
+      connect-timeout: 30
+      response-timeout: 30
+      keep-alive: 20
+    connection-pool:
+      max-total: 200
+      default-max-per-route: 20
+
+
+internal-cache:
+  enable: true
+  caffeine:
+    spec: maximumSize=10000, expireAfterWrite=60s, recordStats, weakKeys, weakValues
+external-cache:
+  enable: true
+  application-cache: APP
+  delimiter: '::'
+  cache-default-expire: 864000
+  cache-expirations:
+    example-cache: 3600
+  single-server-config:
+    address: redis://127.0.0.1:6379
+    idle-connection-timeout: 10000
+    connect-timeout: 30000
+    timeout: 30000
+    retry-attempts: 3
+    retry-interval: 1500
+    password: 12345678
+    subscriptions-per-connection: 5
+    client-name:
+    keep-alive: false
+    tcp-no-delay: false
+  is-gen-key: false
+
+messaging:
+  kafka:
+    enable: true
+    producer:
+      bootstrap-servers: 127.0.0.1:29092
+      delivery-timeout: 20000
+      request-timeout: 10000
+      retries: 3
+    consumer:
+      bootstrap-servers: 127.0.0.1:29092
+      group-id: app
+      auto-offset-reset: latest
+    topic:
+      order-event: ORDER_EVENT
+      handle-update-stock-request: HANDLE_UPDATE_STOCK_REQUEST
+      create-review-request: CREATE_REVIEW_REQUEST
+
+vnpay:
+  tmn-code: O9IG86PT
+  hash-secret: CXXMBGVOQGKJVRWIWX7S91HWCDM3X6DK
+  payment-url: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+  version: 2.1.0
+  command: pay
+  order-type: other
+  return-url: http://localhost:5173/payment/vnpay-callback
+  current-code: VND
+  locale: vn
+  expiration-date: 900
+
+cloudinary:
+  cloud_name: dwgusqbpa
+  api_key: '476734569334626'
+  api_secret: 5CKGbSals-qC1lRiu7wPwr6fC7o
+
+springdoc:
+  swagger-ui:
+    path: /springdoc
+  api-docs:
+    path: /springdoc
+
+
+logging:
+  level:
+    vn.tnteco: debug
