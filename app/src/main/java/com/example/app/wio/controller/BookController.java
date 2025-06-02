@@ -6,10 +6,9 @@ import com.example.app.data.response.book.BookResponse;
 import com.example.app.service.book.IBookService;
 import io.reactivex.rxjava3.core.Single;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import vn.tnteco.common.core.model.paging.Page;
+import vn.tnteco.common.core.model.paging.SearchRequest;
 import vn.tnteco.spring.model.DfResponse;
 import vn.tnteco.spring.rest.BaseResource;
 
@@ -23,9 +22,24 @@ public class BookController extends BaseResource<BookRequest, BookResponse, Inte
         return service.getDetail(id).map(DfResponse::ok);
     }
 
+    @PostMapping("/search/popular")
+    public Single<DfResponse<Page<BookResponse>>> searchPopularBook(@RequestBody SearchRequest searchRequest) {
+        return service.searchPopularBook(searchRequest).map(DfResponse::ok);
+    }
+
     @GetMapping("/count-sold-out")
-    public Single<DfResponse<Long>> countSoldOutBook(@PathVariable Integer id) {
+    public Single<DfResponse<Long>> countSoldOutBook() {
         return service.countSoldOutBook().map(DfResponse::ok);
+    }
+
+    @GetMapping("/count-total")
+    public Single<DfResponse<Long>> countTotalBook() {
+        return service.countTotalBook().map(DfResponse::ok);
+    }
+
+    @PostMapping("/sold-out")
+    public Single<DfResponse<Page<BookResponse>>> getSoldOutBook(@RequestBody SearchRequest searchRequest) {
+        return service.getSoldOutBook(searchRequest).map(DfResponse::ok);
     }
 
 

@@ -71,6 +71,7 @@ public class ReviewRepositoryImpl
                 .select()
                 .from(getTable())
                 .where(condition)
+                .orderBy(REVIEW.RATED_AT.desc())
                 .fetchInto(pojoClass));
     }
 

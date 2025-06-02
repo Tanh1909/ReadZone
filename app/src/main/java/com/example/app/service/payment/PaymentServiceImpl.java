@@ -88,7 +88,7 @@ public class PaymentServiceImpl implements IPaymentService {
             ).flatMap(pair -> {
                 Order order = pair.getLeft().orElseThrow(() -> new ApiException(ORDER_NOT_FOUND));
                 Payment payment = pair.getRight().orElseThrow(() -> new ApiException(PAYMENT_NOT_FOUND));
-                order.setStatus(OrderStatusEnum.CONFIRM.value());
+                order.setStatus(OrderStatusEnum.WAIT_CONFIRM.value());
                 payment.setStatus(PaymentStatusEnum.PAID.value());
                 return orderRepository.updateOrderAndPayment(order, payment)
                         .map(success -> {

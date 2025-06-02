@@ -5,11 +5,13 @@ import com.example.app.data.mapper.BookMapper;
 import com.example.app.data.mapper.OrderMapper;
 import com.example.app.data.mapper.ReviewMapper;
 import com.example.app.data.mapper.UserMapper;
+import com.example.app.data.request.review.ReviewRequest;
 import com.example.app.data.request.review.SearchReviewRequest;
 import com.example.app.data.response.book.BookResponse;
 import com.example.app.data.response.order.OrderItemResponse;
 import com.example.app.data.response.review.AllReviewStarResponse;
 import com.example.app.data.response.review.ReviewBookResponse;
+import com.example.app.data.response.review.ReviewOrderItemResponse;
 import com.example.app.data.response.user.UserInfoResponse;
 import com.example.app.data.tables.pojos.Book;
 import com.example.app.data.tables.pojos.Review;
@@ -28,10 +30,14 @@ import vn.tnteco.common.core.exception.ApiException;
 import vn.tnteco.common.core.model.SimpleSecurityUser;
 import vn.tnteco.common.core.model.paging.Page;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static vn.tnteco.common.data.constant.MessageResponse.SUCCESS;
 
 @Log4j2
 @Service
@@ -81,6 +87,23 @@ public class ReviewServiceImpl implements IReviewService {
     }
 
     @Override
+    public Single<String> updateReview(Integer id, ReviewRequest reviewRequest) {
+        return reviewRepository.getById(id)
+                .flatMap(reviewOptional -> {
+                    Review review = reviewOptional.orElseThrow(() ->
+                            new ApiException(AppErrorResponse.RECORD_NOT_FOUND));
+                    if (review.getIsRated()) {
+                        return Single.error(new ApiException(AppErrorResponse.BUSINESS_ERROR));
+                    }
+                    reviewMapper.updateToPojo(reviewRequest, review);
+                    review.setRatedAt(LocalDateTime.now())
+                            .setIsRated(true);
+                    return reviewRepository.update(id, review)
+                            .map(integer -> SUCCESS);
+                });
+    }
+
+    @Override
     public Single<AllReviewStarResponse> countStartByBookId(Integer bookId) {
         return reviewRepository.countStartByBookId(bookId)
                 .map(mapStar -> {
@@ -98,13 +121,14 @@ public class ReviewServiceImpl implements IReviewService {
     }
 
     @Override
-    public Single<List<OrderItemResponse>> getRateOfMe(boolean isReviewed) {
+    public Single<List<ReviewOrderItemResponse>> getRateOfMe(boolean isReviewed) {
         SimpleSecurityUser simpleSecurityUser = SecurityContext.getSimpleSecurityUser();
         if (simpleSecurityUser == null) {
             throw new ApiException(AppErrorResponse.UNAUTHORIZED);
         }
         return reviewRepository.getRateByUserIdAndStatus(simpleSecurityUser.getId(), isReviewed)
                 .flatMap(reviews -> {
+                    List<ReviewOrderItemResponse> reviewOrderItemResponses = reviewMapper.toReviewOrderItemResponses(reviews);
                     Set<Integer> orderItemIds = reviews.stream()
                             .map(Review::getOrderItemId)
                             .collect(Collectors.toSet());
@@ -120,6 +144,7 @@ public class ReviewServiceImpl implements IReviewService {
                                         .collect(Collectors.toMap(Book::getId, bookMapper::toResponse));
                                 for (OrderItemResponse orderItemResponse : orderItemResponses) {
                                     BookResponse bookResponse = mapIdAndBook.get(orderItemResponse.getBookId());
+                                    if (bookResponse == null) continue;
                                     String imageUrl = bookResponse.getImageUrls().stream()
                                             .findAny()
                                             .orElse(null);
@@ -127,7 +152,13 @@ public class ReviewServiceImpl implements IReviewService {
                                             .setName(bookResponse.getTitle())
                                             .setImageUrl(imageUrl);
                                 }
-                                return orderItemResponses;
+                                Map<Integer, OrderItemResponse> orderItemResponseMap = orderItemResponses.stream()
+                                        .collect(Collectors.toMap(OrderItemResponse::getId, Function.identity()));
+                                for (ReviewOrderItemResponse reviewOrderItemResponse : reviewOrderItemResponses) {
+                                    OrderItemResponse orderItemResponse = orderItemResponseMap.get(reviewOrderItemResponse.getOrderItemId());
+                                    reviewOrderItemResponse.setOrderItem(orderItemResponse);
+                                }
+                                return reviewOrderItemResponses;
                             }
                     );
                 });

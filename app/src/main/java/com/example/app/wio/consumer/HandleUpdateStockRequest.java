@@ -63,12 +63,13 @@ public class HandleUpdateStockRequest {
                         .add(BOOK.STOCK_AVAILABLE, BOOK.STOCK_AVAILABLE.minus(quantity))
                         .add(BOOK.STOCK_RESERVED, BOOK.STOCK_RESERVED.plus(quantity))
                 );
-                case CONFIRM -> bookRepository.updateBlocking(bookId, new UpdateField()
+                case CONFIRMED -> bookRepository.updateBlocking(bookId, new UpdateField()
                         .add(BOOK.STOCK_QUANTITY, BOOK.STOCK_QUANTITY.minus(quantity))
+                        .add(BOOK.STOCK_RESERVED, BOOK.STOCK_RESERVED.minus(quantity))
                 );
                 case CANCELLED -> {
                     String cacheStockKey = CacheConstant.getCacheStockKey(bookId);
-                    externalCacheStore.increment(cacheStockKey,quantity);
+                    externalCacheStore.increment(cacheStockKey, quantity);
                     bookRepository.updateBlocking(bookId, new UpdateField()
                             .add(BOOK.STOCK_AVAILABLE, BOOK.STOCK_AVAILABLE.plus(quantity))
                             .add(BOOK.STOCK_RESERVED, BOOK.STOCK_RESERVED.minus(quantity)));

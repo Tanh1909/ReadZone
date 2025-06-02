@@ -11,4 +11,6 @@ public class UserInfoResponse {
 
     private String fullName;
 
+    private String phone;
+
 }

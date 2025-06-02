@@ -14,8 +14,6 @@ import io.reactivex.rxjava3.core.Single;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
-import vn.tnteco.common.core.exception.ApiException;
-import vn.tnteco.common.core.template.RxTemplate;
 import vn.tnteco.common.data.constant.MessageResponse;
 
 import java.math.BigDecimal;
@@ -23,7 +21,7 @@ import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static com.example.app.data.constant.AppErrorResponse.ORDER_IS_PROCESSING_PAYMENT;
+import static vn.tnteco.common.core.template.RxTemplate.rxSchedulerIo;
 
 @Log4j2
 @Component
@@ -42,7 +40,7 @@ public class VNPAYPayment extends PaymentAbstract {
         Integer orderId = order.getId();
         String paymentKey = CacheConstant.getPaymentKey(orderId.toString());
         String transactionId = TransactionIdGenerator.generateTransactionId(orderId.toString());
-        return RxTemplate.rxSchedulerIo(() -> Optional.ofNullable(externalCacheStore.getObject(paymentKey, PaymentResponse.class)))
+        return rxSchedulerIo(() -> Optional.ofNullable(externalCacheStore.getObject(paymentKey, PaymentResponse.class)))
                 .flatMap(paymentResponseOptional -> {
                     if (paymentResponseOptional.isPresent()) {
                         return Single.just(paymentResponseOptional.get());
@@ -56,7 +54,7 @@ public class VNPAYPayment extends PaymentAbstract {
                             .setStatus(PaymentStatusEnum.PENDING.value())
                             .setTransactionId(transactionId);
                     order.setStatus(OrderStatusEnum.PAYMENT_PROCESSING.value());
-                    return orderRepository.createPaymentAndUpdateOrder(orderId,order,payment)
+                    return orderRepository.createPaymentAndUpdateOrder(orderId, order, payment)
                             .map(isSuccess -> {
                                 String totalAmoutString = order.getTotalAmount().setScale(0, RoundingMode.HALF_UP)
                                         .multiply(new BigDecimal(100))

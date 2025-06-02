@@ -32,8 +32,16 @@ public class CacheConstant {
         return sb.toString();
     }
 
+    public static String getRegisterConfirmCode(String email) {
+        return getCacheKey("REGISTER_CODE", email);
+    }
+
     public static String getPaymentKey(String orderId) {
         return getCacheKey("PAYMENT", orderId);
+    }
+
+    public static String getViewBookKey(Integer bookId) {
+        return getCacheKey("VIEW_BOOK", String.valueOf(bookId));
     }
 
     public static String getCacheStockKey(Integer bookId) {

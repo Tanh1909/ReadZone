@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import vn.tnteco.spring.data.base.BaseResponse;
+import vn.tnteco.spring.data.response.BasicResponse;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -25,6 +26,8 @@ public class BookDetailResponse extends BaseResponse {
 
     private Integer stockAvailable;
 
+    private Integer stockQuantity;
+
     private Integer pageCount;
 
     private Double ratingCount;
@@ -42,4 +45,9 @@ public class BookDetailResponse extends BaseResponse {
     private List<String> imageUrls;
 
     private AuthorResponse author;
+
+    private Integer categoryId;
+
+    private BasicResponse category;
+
 }

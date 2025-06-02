@@ -23,4 +23,6 @@ public class OrderItemResponse {
 
     private BigDecimal priceAtPurchase;
 
+    private Long createdAt;
+
 }

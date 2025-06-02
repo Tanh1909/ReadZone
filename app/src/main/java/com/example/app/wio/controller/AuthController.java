@@ -1,9 +1,7 @@
 package com.example.app.wio.controller;
 
 
-import com.example.app.data.request.AuthRequest;
-import com.example.app.data.request.UserCreateRequest;
-import com.example.app.data.request.UserUpdateProfileRequest;
+import com.example.app.data.request.*;
 import com.example.app.data.response.TokenResponse;
 import com.example.app.data.response.UserDetailResponse;
 import com.example.app.service.auth.IAuthService;
@@ -30,6 +28,16 @@ public class AuthController {
         return authService.register(userCreateRequest).map(DfResponse::ok);
     }
 
+    @PostMapping("/confirm-code")
+    public Single<DfResponse<Boolean>> confirmCode(@RequestBody @Valid ConfirmCodeRequest confirmCodeRequest) {
+        return authService.confirmRegisterCode(confirmCodeRequest).map(DfResponse::ok);
+    }
+
+    @PostMapping("/resend-code")
+    public Single<DfResponse<Boolean>> resendConfirmCode(@RequestBody @Valid ResendCodeRequest request) {
+        return authService.resendConfirmCode(request.getEmail()).map(DfResponse::ok);
+    }
+
     @GetMapping("/me")
     public Single<DfResponse<UserDetailResponse>> getMe() {
         return authService.getMe().map(DfResponse::ok);
@@ -39,6 +47,11 @@ public class AuthController {
     @PutMapping("/update-profile")
     public Single<DfResponse<UserDetailResponse>> updateProfile(@RequestBody @Valid UserUpdateProfileRequest userUpdateProfileRequest) {
         return authService.updateProfile(userUpdateProfileRequest).map(DfResponse::ok);
+    }
+
+    @PutMapping("/update-avatar")
+    public Single<DfResponse<UserDetailResponse>> updateAvatar(@RequestBody @Valid UserUpdateAvatarRequest userUpdateAvatarRequest) {
+        return authService.updateAvatar(userUpdateAvatarRequest).map(DfResponse::ok);
     }
 
 }

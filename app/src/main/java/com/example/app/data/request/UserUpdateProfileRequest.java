@@ -9,8 +9,6 @@ import lombok.Setter;
 @Setter
 public class UserUpdateProfileRequest {
 
-    private String avatar;
-
     @NotNull
     private String fullName;
 

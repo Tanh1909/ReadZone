@@ -35,11 +35,11 @@ public class CashPayment extends PaymentAbstract {
 
     @Override
     protected Single<PaymentResponse> handlePayment(Order order) {
-        order.setStatus(OrderStatusEnum.CONFIRM.value());
+        order.setStatus(OrderStatusEnum.WAIT_CONFIRM.value());
         Integer orderId = order.getId();
         String transactionId = TransactionIdGenerator.generateTransactionId(orderId.toString());
         Payment payment = new Payment()
-                .setStatus(PaymentStatusEnum.PENDING.value())
+                .setStatus(PaymentStatusEnum.CONFIRM.value())
                 .setOrderId(orderId)
                 .setPaymentMethod(PaymentMethod.CASH.value())
                 .setCreatedAt(LocalDateTime.now())

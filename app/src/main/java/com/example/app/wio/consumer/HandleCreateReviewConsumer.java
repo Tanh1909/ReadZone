@@ -36,7 +36,7 @@ public class HandleCreateReviewConsumer {
     private final ApplicationProperties applicationProperties;
 
     @KafkaListener(
-            topics = "${messaging.kafka.topic.order-event}",
+            topics = "${messaging.kafka.topic.create-review-request}",
             groupId = "${messaging.kafka.consumer.group-id}",
             autoStartup = "true")
     public void handleCreateReviewRequest(@Payload String message,

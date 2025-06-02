@@ -7,6 +7,8 @@ public enum PaymentStatusEnum {
 
     PENDING("pending"),
 
+    CONFIRM("confirm"),
+
     PAID("paid"),
 
     FAILED("failed"),

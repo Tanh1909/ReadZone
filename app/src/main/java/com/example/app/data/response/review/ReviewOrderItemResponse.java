@@ -10,7 +10,9 @@ import java.util.List;
 @Data
 @Accessors(chain = true)
 @EqualsAndHashCode(callSuper = false)
-public class ReviewOrderItemResponse extends OrderItemResponse {
+public class ReviewOrderItemResponse {
+
+    private Integer id;
 
     private Integer rating;
 
@@ -23,5 +25,9 @@ public class ReviewOrderItemResponse extends OrderItemResponse {
     private Long createdAt;
 
     private Boolean isRated;
+
+    private Integer orderItemId;
+
+    private OrderItemResponse orderItem;
 
 }

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Thông báo cập nhật đơn hàng</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f7f9fc;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .logo {
+            max-width: 150px;
+            margin-bottom: 15px;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-top: 10px;
+            text-transform: uppercase;
+            font-size: 12px;
+        }
+        .status-new { background-color: #3498db; color: white; }
+        .status-processing { background-color: #f39c12; color: white; }
+        .status-shipped { background-color: #9b59b6; color: white; }
+        .status-delivered { background-color: #2ecc71; color: white; }
+        .status-cancelled { background-color: #e74c3c; color: white; }
+        .order-details {
+            margin: 25px 0;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .address-box {
+            background: #e8f4fc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        .item-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .item-table th {
+            background-color: #2c3e50;
+            color: white;
+            text-align: left;
+            padding: 12px 15px;
+        }
+        .item-table td {
+            padding: 10px 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .item-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #7f8c8d;
+            font-size: 14px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+        .highlight {
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        .btn {
+            cursor: pointer;
+            display: inline-block;
+            padding: 12px 25px;
+            background-color: #3498db;
+            color: white !important;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1 th:switch="${order.status}">
+            <span th:case="'wait_confirm'">ĐƠN HÀNG CỦA BẠN ĐÃ ĐƯỢC ĐẶT</span>
+            <span th:case="'confirmed'">ĐƠN HÀNG CỦA BẠN ĐÃ ĐƯỢC XÁC NHẬN</span>
+            <span th:case="'shipping'">ĐƠN HÀNG CỦA BẠN ĐANG CHỜ GIAO HÀNG</span>
+            <span th:case="'shipped'">ĐƠN HÀNG CỦA BẠN ĐÃ ĐƯỢC GIAO</span>
+            <span th:case="'completed'">ĐƠN HÀNG CỦA BẠN ĐÃ HOÀN THÀNH</span>
+            <span th:case="'cancelled'">ĐƠN HÀNG CỦA BẠN ĐÃ BỊ HỦY</span>
+            <span th:case="*">ĐƠN HÀNG CỦA BẠN ĐÃ ĐƯỢC CẬP NHẬT</span>
+        </h1>
+    </div>
+
+    <div class="order-details">
+        <h2>Thông tin đơn hàng <span th:text="'#' + ${order.id}"></span></h2>
+        <p><strong>Ngày đặt hàng:</strong>
+            <span th:text="${#temporals.format(order.orderDate, 'dd/MM/yyyy HH:mm')}"></span>
+        </p>
+        <p><strong>Người nhận:</strong> <span th:text="${user.fullName}"></span></p>
+
+        <div class="address-box">
+            <h3>Địa chỉ giao hàng:</h3>
+            <p th:text="${user.fullName}"></p>
+            <p th:text="${user.phone}"></p>
+            <p>
+                <span th:text="${shippingAddress.detail}"></span>,
+                <span th:text="${shippingAddress.ward}"></span>,
+                <span th:text="${shippingAddress.district}"></span>,
+                <span th:text="${shippingAddress.province}"></span>
+            </p>
+        </div>
+    </div>
+
+    <table class="item-table">
+        <thead>
+        <tr>
+            <th>Ảnh</th>
+            <th>Sản phẩm</th>
+            <th>Đơn giá</th>
+            <th>Số lượng</th>
+            <th>Thành tiền</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="item : ${orderItems}">
+            <td>
+                <img th:src="@{${item.imageUrl}}" alt="Ảnh sản phẩm" style="width: 80px; height: auto;">
+            </td>
+            <td th:text="${item.name}">Tên sách</td>
+            <td th:text="${#numbers.formatDecimal(item.priceAtPurchase, 0, 0, 'COMMA') + '₫'}">0.00</td>
+            <td th:text="${item.quantity}">1</td>
+            <td th:text="${#numbers.formatDecimal(item.priceAtPurchase * item.quantity, 0, 0, 'COMMA') + '₫'}">0.00</td>
+        </tr>
+        </tbody>
+    </table>
+    <div>Phí ship: 35.000 đ</div>
+    <div style="text-align: right; font-size: 18px;">
+        <p><strong>Tổng cộng:</strong>
+            <span class="highlight" th:text="${#numbers.formatDecimal(order.totalAmount, 0, 0, 'COMMA') + '₫'}"></span>
+        </p>
+    </div>
+
+    <div style="text-align: center; margin: 30px 0;">
+        <a href="http://localhost:5173/order/history" class="btn">XEM CHI TIẾT ĐƠN HÀNG</a>
+    </div>
+
+    <div class="footer">
+        <p>Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!</p>
+        <p>Nếu có bất kỳ câu hỏi nào, vui lòng liên hệ
+            <a href="mailto:dtienanh1909@gmail.com">dtienanh1909@gmail.com</a> hoặc
+            <span >0865923203</span>
+        </p>
+        <p>© 2025 ReadZone. All rights reserved.</p>
+    </div>
+</div>
+</body>
+</html>

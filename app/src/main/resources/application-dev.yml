@@ -16,7 +16,18 @@ spring:
         hikari:
           idle-timeout: 30000
           max-lifetime: 900000
-
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: boyhodo03@gmail.com
+    password: ohbw wbsv uhrv ifhu
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+#Mail
 app:
   application-short-name: READ_ZONE
   enable-log-request-http: false
@@ -24,15 +35,21 @@ app:
     api-whitelist:
       - /auth/login
       - /auth/register
+      - /auth/confirm-code
+      - /auth/resend-code
+      - /category
+      - /author
       - /user
       - /book
       - /review/search
       - /review/count-star
+      - /file
     jwt:
       secret-key: WZXD8K9rPI4yQcQetLgnAlEQKrAnc_hI71u4fIzFkzY
       expired-in: 172800000
       refresh-token:
         expiration: 345600000
+
 
 
 http-client:

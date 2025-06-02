@@ -11,6 +11,8 @@ public interface IRxBookRepository extends IRxRepository<Book, Integer> {
 
     Single<Long> countSoldOutBook();
 
+    Single<Long> countTotalBook();
+
     Single<Boolean> testLockUpdate();
 
 }

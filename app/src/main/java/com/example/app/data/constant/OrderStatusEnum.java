@@ -9,7 +9,11 @@ public enum OrderStatusEnum {
 
     PAYMENT_PROCESSING("payment_processing"),
 
-    CONFIRM("confirm"),
+    WAIT_CONFIRM("wait_confirm"),
+
+    CONFIRMED("confirmed"),
+
+    SHIPPING("shipping"),
 
     SHIPPED("shipped"),
 

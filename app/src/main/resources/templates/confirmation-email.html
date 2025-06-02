@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Xác nhận đăng ký</title>
+    <style>
+        .container { max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ddd; }
+        .code { font-size: 24px; color: #2c3e50; padding: 10px 20px; background: #f8f9fa; display: inline-block; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Xin chào <span th:text="${username}"></span>!</h1>
+    <p>Cảm ơn bạn đã đăng ký tài khoản. Vui lòng sử dụng mã sau để xác nhận:</p>
+
+    <div class="code" th:text="${confirmationCode}"></div>
+
+    <p>Mã có hiệu lực trong <strong>5 phút</strong>.</p>
+    <p>Nếu không phải bạn thực hiện đăng ký, vui lòng bỏ qua email này.</p>
+
+    <hr>
+    <p>Trân trọng,<br>Đội ngũ hỗ trợ</p>
+</div>
+</body>
+</html>
